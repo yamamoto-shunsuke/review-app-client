@@ -3,9 +3,6 @@ import { RootPage } from "./pages/Root.js";
 import { RestaurantDetailPage } from "./pages/RestaurantDetail.js";
 import { RestaurantListPage } from "./pages/RestaurantList.js";
 
-const env = process.env
-console.log(env.XXX)
-
 function Header() {
   return (
     <section className="hero is-warning">
