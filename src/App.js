@@ -1,9 +1,13 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+<<<<<<< HEAD
 import { useAuth0 } from "@auth0/auth0-react";
+=======
+>>>>>>> a076f00434c69d9e7b5c66c5a1505665d7837395
 import { RootPage } from "./pages/Root.js";
 import { RestaurantDetailPage } from "./pages/RestaurantDetail.js";
 import { RestaurantListPage } from "./pages/RestaurantList.js";
 
+<<<<<<< HEAD
 function AuthButton() {
   const { isLoading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
@@ -48,6 +52,8 @@ function AuthButton() {
   );
 }
 
+=======
+>>>>>>> a076f00434c69d9e7b5c66c5a1505665d7837395
 function Header() {
   return (
     <section className="hero is-warning">
@@ -84,7 +90,13 @@ export function App() {
       <section className="section has-background-warning-light">
         <div className="container">
           <div className="block has-text-right">
+<<<<<<< HEAD
           <AuthButton />
+=======
+            <button className="button is-warning is-inverted is-outlined">
+              ログイン
+            </button>
+>>>>>>> a076f00434c69d9e7b5c66c5a1505665d7837395
           </div>
           <Switch>
             <Route path="/" exact>

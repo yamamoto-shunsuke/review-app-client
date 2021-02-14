@@ -17,6 +17,7 @@ export async function getRestaurantReviews(restaurantId, arg = {}) {
   const params = new URLSearchParams(arg);
   return request(`/restaurants/${restaurantId}/reviews?${params.toString()}`);
 }
+<<<<<<< HEAD
 
 export async function postRestaurantReview(
   restaurantId,
@@ -35,3 +36,5 @@ export async function postRestaurantReview(
     method: "POST",
   });
 }
+=======
+>>>>>>> a076f00434c69d9e7b5c66c5a1505665d7837395
