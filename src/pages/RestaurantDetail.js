@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { getRestaurant, getRestaurantReviews } from "../api.js";
+import { useAuth0 } from "@auth0/auth0-react";
+import {
+  getRestaurant,
+  getRestaurantReviews,
+  postRestaurantReview,
+} from "../api.js";
 import { Breadcrumb, Loading, Pagination, Review } from "../components";
 
 function Form({ onSubmit }) {
+  const { isAuthenticated } = useAuth0();
+
   async function handleFormSubmit(event) {
     event.preventDefault();
     if (onSubmit) {
@@ -23,7 +30,12 @@ function Form({ onSubmit }) {
         <div className="control">
           <label className="label">タイトル</label>
           <div className="control">
-            <input name="title" className="input" required disabled />
+            <input
+              name="title"
+              className="input"
+              required
+              disabled={!isAuthenticated}
+            />
           </div>
         </div>
       </div>
@@ -31,13 +43,22 @@ function Form({ onSubmit }) {
         <div className="control">
           <label className="label">コメント</label>
           <div className="control">
-            <textarea name="comment" className="textarea" required disabled />
+            <textarea
+              name="comment"
+              className="textarea"
+              required
+              disabled={!isAuthenticated}
+            />
           </div>
         </div>
       </div>
       <div className="field">
         <div className="control">
-          <button type="submit" className="button is-warning" disabled>
+          <button
+            type="submit"
+            className="button is-warning"
+            disabled={!isAuthenticated}
+          >
             レビューを投稿
           </button>
         </div>
@@ -75,25 +96,25 @@ function Restaurant({ restaurant, reviews, page, perPage }) {
         {reviews.rows.length === 0 ? (
           <p>レビューがまだありません。</p>
         ) : (
-          <>
-            <div className="block">
-              <p>{reviews.count}件のレビュー</p>
-            </div>
-            <div className="block">
-              {reviews.rows.map((review) => {
-                return <Review key={review.id} review={review} />;
-              })}
-            </div>
-            <div className="block">
-              <Pagination
-                path={`/restaurants/${restaurant.id}`}
-                page={page}
-                perPage={perPage}
-                count={reviews.count}
-              />
-            </div>
-          </>
-        )}
+            <>
+              <div className="block">
+                <p>{reviews.count}件のレビュー</p>
+              </div>
+              <div className="block">
+                {reviews.rows.map((review) => {
+                  return <Review key={review.id} review={review} />;
+                })}
+              </div>
+              <div className="block">
+                <Pagination
+                  path={`/restaurants/${restaurant.id}`}
+                  page={page}
+                  perPage={perPage}
+                  count={reviews.count}
+                />
+              </div>
+            </>
+          )}
       </div>
     </>
   );
@@ -102,6 +123,8 @@ function Restaurant({ restaurant, reviews, page, perPage }) {
 export function RestaurantDetailPage() {
   const [restaurant, setRestaurant] = useState(null);
   const [reviews, setReviews] = useState(null);
+
+  const { getAccessTokenWithPopup } = useAuth0();
 
   const params = useParams();
   const location = useLocation();
@@ -124,6 +147,20 @@ export function RestaurantDetailPage() {
     });
   }, [params.restaurantId, page]);
 
+  async function handleFormSubmit(record) {
+    await postRestaurantReview(
+      params.restaurantId,
+      record,
+      getAccessTokenWithPopup
+    );
+    const data = await getRestaurantReviews(params.restaurantId, {
+      limit: perPage,
+      offset: (page - 1) * perPage,
+    });
+    setReviews(data);
+  }
+
+
   return (
     <>
       <div className="box">
@@ -142,15 +179,15 @@ export function RestaurantDetailPage() {
       {restaurant == null || reviews == null ? (
         <Loading />
       ) : (
-        <Restaurant
-          restaurant={restaurant}
-          reviews={reviews}
-          page={page}
-          perPage={perPage}
-        />
-      )}
+          <Restaurant
+            restaurant={restaurant}
+            reviews={reviews}
+            page={page}
+            perPage={perPage}
+          />
+        )}
       <div className="box">
-        <Form />
+        <Form onSubmit={handleFormSubmit} />
       </div>
     </>
   );
